@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <style>
+    body {
+      font-family: monospace;
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #00ff00;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    a {
+      color: #00ff00;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    iframe {
+      border: none;
+      width: 100%;
+      height: 80vh;
+    }
+  </style>
+</head>
+<body>
+  <h1>Spotify Playlist Preview</h1>
+  <p>Check out my awesome playlist:</p>
+  <img id="spotify-image" src="https://lanyard.cnrad.dev/api/693428744622309418">
+  <iframe src="https://open.spotify.com/embed/playlist/1pZbWD064ZGT8uKNsr4OEd" allowtransparency="true" allow="encrypted-media"></iframe>
+  
+  <script>
+    setInterval(function() {
+      var imgElement = document.getElementById('spotify-image');
+      imgElement.src = imgElement.src + '?' + new Date().getTime();
+    }, 1000); // Refresh every second
+  </script>
+</body>
+</html>

